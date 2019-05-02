@@ -17,7 +17,9 @@ direction = 'right'
 def hoop_move():
     if direction == 'right'
         if hoopob.return_x() != 300:
-            hoopob.move_right
+            hoopob.move_right()
+        if hoopob.return_x() == 300:
+            hoopob.move_left()
 
     if direction == 'left'
 
