@@ -1,7 +1,7 @@
 import pygame, sys, time, random
 from pygame.locals import *
 
-class hoop(pygame.sprite.Sprite):
+class Hoop(pygame.sprite.Sprite):
 
     def __init__(self,x):
 
