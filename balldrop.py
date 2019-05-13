@@ -7,7 +7,7 @@ pygame.init()
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 DISPLAYSURF = pygame.display.set_mode((300,400), 0, 32)
-FPS = 10
+FPS = 20
 fpsClock = pygame.time.Clock()
 
 HOOP = pygame.image.load('Basketball Hoop.png')
@@ -25,6 +25,7 @@ direction = 'right'
 
 play_rect = DISPLAYSURF.get_rect()
 
+win_lose = 'N/A'
 opener = 'true'
 
 def opening_screen():
@@ -45,6 +46,13 @@ def switch_opener(opener):
         opener = 'true'
     return opener
 
+def game_over():
+    BASICFONT = pygame.font.Font('freesansbold.ttf', 50)
+    txt_game_over = BASICFONT.render('Game Over',1,BLACK)
+    game_over_rect = DISPLAYSURF.get_rect()
+    game_over_rect.center = (175,250)
+    DISPLAYSURF.blit(txt_game_over, game_over_rect)
+
 def hoop_move():
     if direction == 'right':
         hoopob.move_right()
@@ -64,6 +72,14 @@ def update_hoop():
 def update_ball():
     DISPLAYSURF.blit(BALL, (ballob.rect.x,ballob.rect.y,30,30))
 
+def round_over():
+    if ballob.rect.y == 355:
+        if hoopob.rect.contains(ballob.rect):
+            win_lose == 'win'
+        else:
+            win_lose == 'lose'
+    return win_lose
+
 while True:
     DISPLAYSURF.fill(WHITE)
 
@@ -73,12 +89,11 @@ while True:
             sys.exit()
         if event.type == MOUSEBUTTONDOWN and opener == 'true':
             opener = switch_opener(opener)
-        else:
-            if event.type == KEYDOWN:
-                if event.key == 'K_LEFT':
-                    ballob.move_left()
-                if event.key == 'K_RIGHT':
-                    ballob.move_right()
+        if event.type == KEYDOWN and opener != 'true' and ballob.rect.y <= 250:
+            if event.key == K_LEFT:
+                ballob.move_left()
+            if event.key == K_RIGHT:
+                ballob.move_right()
 
     if opener == 'true':
         opening_screen()
@@ -91,6 +106,19 @@ while True:
 
         ballob.move_down()
         update_ball()
+
+        win_lose = round_over()
+        if win_lose == 'win':
+            print ("true")
+        if win_lose == 'lose':
+            while True:
+                DISPLAYSURF.fill(WHITE)
+                game_over()
+                pygame.display.update()
+                for event in pygame.event.get():
+                    if event.type == QUIT:
+                        pygame.quit()
+                        sys.exit()
 
     pygame.display.update()
     fpsClock.tick(FPS)

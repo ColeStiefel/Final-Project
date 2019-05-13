@@ -8,7 +8,7 @@ class Ball(pygame.sprite.Sprite):
         super().__init__()
         self.x = x
         self.y = y
-        self.rect = pygame.Rect(self.x,self.y,30,1)
+        self.rect = pygame.Rect(self.x,self.y+30,30,1)
 
     def move_down(self):
         self.rect.y += 5
