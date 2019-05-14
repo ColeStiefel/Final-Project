@@ -2,12 +2,13 @@ import pygame, sys, time, random
 from pygame.locals import *
 from ball import Ball
 from hoop import Hoop
+from obstacle import Obstacle
 
 pygame.init()
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 DISPLAYSURF = pygame.display.set_mode((300,400), 0, 32)
-FPS = 20
+FPS = 15
 fpsClock = pygame.time.Clock()
 
 HOOP = pygame.image.load('Basketball Hoop.png')
@@ -18,10 +19,12 @@ BALL = pygame.transform.scale(BALL, (30,30))
 
 pygame.display.set_caption("Ball Drop")
 
-ballob = Ball(135,0)
+ballob = Ball(135,30)
 hoopob = Hoop(0)
 
 direction = 'right'
+
+level = 1
 
 play_rect = DISPLAYSURF.get_rect()
 
@@ -50,7 +53,7 @@ def game_over():
     BASICFONT = pygame.font.Font('freesansbold.ttf', 50)
     txt_game_over = BASICFONT.render('Game Over',1,BLACK)
     game_over_rect = DISPLAYSURF.get_rect()
-    game_over_rect.center = (175,250)
+    game_over_rect.center = (160,250)
     DISPLAYSURF.blit(txt_game_over, game_over_rect)
 
 def hoop_move():
@@ -70,15 +73,19 @@ def update_hoop():
     DISPLAYSURF.blit(HOOP, (hoopob.rect.x,355,45,45))
 
 def update_ball():
-    DISPLAYSURF.blit(BALL, (ballob.rect.x,ballob.rect.y,30,30))
+    DISPLAYSURF.blit(BALL, (ballob.rect.x,ballob.rect.y-30,30,30))
 
 def round_over():
-    if ballob.rect.y == 355:
-        if hoopob.rect.contains(ballob.rect):
-            win_lose == 'win'
-        else:
-            win_lose == 'lose'
+    if hoopob.rect.contains(ballob.rect):
+        win_lose = 'win'
+    else:
+        win_lose = 'lose'
     return win_lose
+
+def obstacle_maker(x,y,length,width):
+    obstacleob = Obstacle(x,y,length,width)
+    pygame.draw.rect(DISPLAYSURF,BLACK,obstacleob.rect,1)
+
 
 while True:
     DISPLAYSURF.fill(WHITE)
@@ -107,18 +114,24 @@ while True:
         ballob.move_down()
         update_ball()
 
-        win_lose = round_over()
-        if win_lose == 'win':
-            print ("true")
-        if win_lose == 'lose':
-            while True:
-                DISPLAYSURF.fill(WHITE)
-                game_over()
-                pygame.display.update()
-                for event in pygame.event.get():
-                    if event.type == QUIT:
-                        pygame.quit()
-                        sys.exit()
+        if level == 2:
+            FPS = 20
+            obstacle_maker(50,200,50,20)
+
+        if ballob.rect.y == 355:
+            win_lose = round_over()
+            if win_lose == 'win':
+                level += 1
+
+            if win_lose == 'lose':
+                while True:
+                    DISPLAYSURF.fill(WHITE)
+                    game_over()
+                    pygame.display.update()
+                    for event in pygame.event.get():
+                        if event.type == QUIT:
+                            pygame.quit()
+                            sys.exit()
 
     pygame.display.update()
     fpsClock.tick(FPS)
