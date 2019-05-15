@@ -20,3 +20,7 @@ class Ball(pygame.sprite.Sprite):
     def move_right(self):
         if self.rect.x != 300:
             self.rect.x += 5
+
+    def reset(self):
+        self.rect.x = 135
+        self.rect.y = 30

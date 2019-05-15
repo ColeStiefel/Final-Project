@@ -22,6 +22,8 @@ pygame.display.set_caption("Ball Drop")
 ballob = Ball(135,30)
 hoopob = Hoop(0)
 
+obstacles = pygame.sprite.Group()
+
 direction = 'right'
 
 level = 1
@@ -82,9 +84,22 @@ def round_over():
         win_lose = 'lose'
     return win_lose
 
-def obstacle_maker(x,y,length,width):
-    obstacleob = Obstacle(x,y,length,width)
-    pygame.draw.rect(DISPLAYSURF,BLACK,obstacleob.rect,1)
+def obstacle_maker(x,y,length,width,side_moves,direction):
+    obstacleob = Obstacle(x,y,length,width,side_moves,direction)
+    pygame.draw.rect(DISPLAYSURF,BLACK,obstacleob.rect,0)
+    obstacles.add(obstacleob)
+
+def obstacle_collide():
+    if pygame.sprite.spritecollideany(ballob,obstacles):
+        win_lose = 'lose'
+        return True
+    else:
+        return False
+
+def obsacle_mover():
+    for obstacle in obstacles:
+        if obstacle.side_moves2 != 0:
+            if obstacle.side_moves1 != 0:
 
 
 while True:
@@ -96,7 +111,7 @@ while True:
             sys.exit()
         if event.type == MOUSEBUTTONDOWN and opener == 'true':
             opener = switch_opener(opener)
-        if event.type == KEYDOWN and opener != 'true' and ballob.rect.y <= 250:
+        if event.type == KEYDOWN and opener != 'true':
             if event.key == K_LEFT:
                 ballob.move_left()
             if event.key == K_RIGHT:
@@ -115,15 +130,23 @@ while True:
         update_ball()
 
         if level == 2:
-            FPS = 20
-            obstacle_maker(50,200,50,20)
+            obstacle_maker(110,250,80,20,0,'right')
 
-        if ballob.rect.y == 355:
+        if level == 3:
+            obstacle_maker(130,225,40,20,8,'right')
+
+        if ballob.rect.y == 355 or obstacle_collide() == True:
             win_lose = round_over()
             if win_lose == 'win':
                 level += 1
-
-            if win_lose == 'lose':
+                ballob.reset()
+                hoopob.reset()
+                direction = 'right'
+                win_lose = 'N/A'
+                FPS += 3
+                for obstacleob in obstacles:
+                    obstacles.remove(obstacleob)
+            if win_lose == 'lose' or obstacle_collide() == True:
                 while True:
                     DISPLAYSURF.fill(WHITE)
                     game_over()

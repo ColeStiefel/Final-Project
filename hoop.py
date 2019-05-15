@@ -17,3 +17,6 @@ class Hoop(pygame.sprite.Sprite):
 
     def move_left(self):
         self.rect.x -= 5
+
+    def reset(self):
+      self.rect.x = 0
