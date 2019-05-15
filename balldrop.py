@@ -86,7 +86,6 @@ def round_over():
 
 def obstacle_maker(x,y,length,width,side_moves,direction):
     obstacleob = Obstacle(x,y,length,width,side_moves,direction)
-    pygame.draw.rect(DISPLAYSURF,BLACK,obstacleob.rect,0)
     obstacles.add(obstacleob)
 
 def obstacle_collide():
@@ -96,11 +95,17 @@ def obstacle_collide():
     else:
         return False
 
-def obsacle_mover():
-    for obstacle in obstacles:
-        if obstacle.side_moves2 != 0:
-            if obstacle.side_moves1 != 0:
+def obstacle_mover():
+    for obstacleob in obstacles:
+        if obstacleob.side_moves2 != 0:
+            if obstacleob.direction == 'left':
+                obstacleob.move_left()
+            if obstacleob.direction == 'right':
+                obstacleob.move_right()
 
+def update_obstacle():
+    for obstacleob in obstacles:
+        pygame.draw.rect(DISPLAYSURF,BLACK,obstacleob.rect,0)
 
 while True:
     DISPLAYSURF.fill(WHITE)
@@ -130,10 +135,11 @@ while True:
         update_ball()
 
         if level == 2:
-            obstacle_maker(110,250,80,20,0,'right')
+            update_obstacle()
 
         if level == 3:
-            obstacle_maker(130,225,40,20,8,'right')
+            obstacle_mover()
+            update_obstacle()
 
         if ballob.rect.y == 355 or obstacle_collide() == True:
             win_lose = round_over()
@@ -146,6 +152,13 @@ while True:
                 FPS += 3
                 for obstacleob in obstacles:
                     obstacles.remove(obstacleob)
+                if level == 2:
+                    obstacle_maker(110,250,80,20,0,'right')
+                if level == 3:
+                    obstacle_maker(135,225,30,20,8,'left')
+                if level == 4:
+                    obstacle_maker(145,150,10,50,10,'right')
+                    obstacle_maker(145,200,10,50,10,'left')
             if win_lose == 'lose' or obstacle_collide() == True:
                 while True:
                     DISPLAYSURF.fill(WHITE)
