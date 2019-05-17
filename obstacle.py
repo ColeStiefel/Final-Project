@@ -8,7 +8,16 @@ class Obstacle(pygame.sprite.Sprite):
         super().__init__()
         self.side_moves1 = side_moves
         self.side_moves2 = side_moves
-        self.direction = direction
+        if direction == 'either':
+            random_direction = random.randint(1,2)
+            if random_direction == 1:
+                self.direction = 'left'
+            if random_direction == 2:
+                self.direction = 'right'
+        if direction == 'left':
+            self.direction = 'left'
+        if direction == 'right':
+            self.direction = 'right'
         self.rect = pygame.Rect(x,y,length,width)
 
     def move_left(self):

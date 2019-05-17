@@ -19,4 +19,5 @@ class Hoop(pygame.sprite.Sprite):
         self.rect.x -= 5
 
     def reset(self):
-      self.rect.x = 0
+      random_hoop_spawn = random.randint(1,40)
+      self.rect.x = random_hoop_spawn * 5

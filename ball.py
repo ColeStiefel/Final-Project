@@ -14,12 +14,12 @@ class Ball(pygame.sprite.Sprite):
         self.rect.y += 5
 
     def move_left(self):
-        if self.rect.x != 0:
-            self.rect.x -= 5
+        if self.rect.x != 5:
+            self.rect.x -= 10
 
     def move_right(self):
-        if self.rect.x != 270:
-            self.rect.x += 5
+        if self.rect.x != 265:
+            self.rect.x += 10
 
     def reset(self):
         self.rect.x = 135
