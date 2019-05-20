@@ -27,15 +27,21 @@ pygame.display.set_caption("Ball Drop")
 ballob = Ball(135,30)
 hoopob = Hoop(130)
 
+#sprite group for all the obstacles
 obstacles = pygame.sprite.Group()
 
+#variable to keep track of which direction the hoop is moving
 direction = 'right'
 
+#variable to keep track of which level it is
 level = 1
 
+#rect for the 'play' text in the opening screen, also used as a button so it has to be defined outside the function
 play_rect = DISPLAYSURF.get_rect()
 
+#variable keeping track of if the round has been won or lost
 win_lose = 'N/A'
+#variable keeping track of if the opening screen has been exited yet
 opener = 'true'
 
 def opening_screen():
@@ -104,7 +110,7 @@ def obstacle_maker(x,y,length,width,side_moves,direction):
 
 def obstacle_collide():
     for obstacleob in obstacles:
-        if pygame.sprite.spritecollideany(ballob,obstacles):
+        if obstacleob.rect.colliderect((ballob.rect.x,ballob.rect.y-30,30,30)):
             win_lose = 'lose'
             return True
     else:
@@ -174,10 +180,10 @@ while True:
                 if level == 2:
                     obstacle_maker(125,220,50,20,0,'right')
                 if level == 3:
-                    obstacle_maker(135,205,30,20,12,'either')
+                    obstacle_maker(135,210,30,10,12,'either')
                 if level == 4:
-                    obstacle_maker(145,160,10,30,12,'left')
-                    obstacle_maker(145,210,10,30,12,'right')
+                    obstacle_maker(145,160,10,30,18,'left')
+                    obstacle_maker(145,210,10,30,18,'right')
             if win_lose == 'lose' or obstacle_collide() == True:
                 while True:
                     DISPLAYSURF.fill(WHITE)
