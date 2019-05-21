@@ -44,7 +44,9 @@ win_lose = 'N/A'
 #variable keeping track of if the opening screen has been exited yet
 opener = 'true'
 
+#displays all of the text on the opening screen
 def opening_screen():
+    #sequence of code that defines the font, makes the text, defines and positions the rectangles, and displays the text
     BASICFONT = pygame.font.Font('freesansbold.ttf', 40)
     small_BASICFONT = pygame.font.Font('freesansbold.ttf', 22)
     txt_ball_dropper = BASICFONT.render('Ball Dropper',1,BLACK)
@@ -64,6 +66,7 @@ def opening_screen():
     DISPLAYSURF.blit(txt_how_to1,how_to_rect1)
     DISPLAYSURF.blit(txt_how_to2,how_to_rect2)
 
+#determines if the player clicked on the play button and returns if it did or not
 def switch_opener(opener):
     if play_rect.collidepoint(pygame.mouse.get_pos()):
         opener = 'false'
@@ -71,6 +74,7 @@ def switch_opener(opener):
         opener = 'true'
     return opener
 
+#displays text for the game over screen
 def game_over():
     BASICFONT = pygame.font.Font('freesansbold.ttf', 50)
     txt_game_over = BASICFONT.render('Game Over',1,BLACK)
@@ -78,12 +82,14 @@ def game_over():
     game_over_rect.center = (160,250)
     DISPLAYSURF.blit(txt_game_over, game_over_rect)
 
+#moves the hoop side to side depending on which direction it is going
 def hoop_move():
     if direction == 'right':
         hoopob.move_right()
     if direction == 'left':
         hoopob.move_left()
 
+#determines if the hoop is at the edge of the screen, and if so, returns the switched direction
 def switch_direction(direction):
     if direction == 'right' and hoopob.return_x() == 255:
         direction = 'left'
@@ -91,12 +97,15 @@ def switch_direction(direction):
         direction = 'right'
     return direction
 
+#displays hoop
 def update_hoop():
     DISPLAYSURF.blit(HOOP, (hoopob.rect.x,355,45,45))
 
+#displays ball
 def update_ball():
     DISPLAYSURF.blit(BALL, (ballob.rect.x,ballob.rect.y-30,30,30))
 
+#determines if the ball's rect is in the hoop's rect, and switches win_lose to 'win' or 'lose'
 def round_over():
     if hoopob.rect.contains(ballob.rect):
         win_lose = 'win'
@@ -104,10 +113,12 @@ def round_over():
         win_lose = 'lose'
     return win_lose
 
+#makes an obstacle according to the parameters given and then adds it to the group
 def obstacle_maker(x,y,length,width,side_moves,direction):
     obstacleob = Obstacle(x,y,length,width,side_moves,direction)
     obstacles.add(obstacleob)
 
+#checks if an obstacle has collided with the ball, and if so returns win_lose to 'lose'
 def obstacle_collide():
     for obstacleob in obstacles:
         if obstacleob.rect.colliderect((ballob.rect.x,ballob.rect.y-30,30,30)):
@@ -116,6 +127,7 @@ def obstacle_collide():
     else:
         return False
 
+#moves the obstacle if it is defined as a moving obstacle (side_moves != 0)
 def obstacle_mover():
     for obstacleob in obstacles:
         if obstacleob.side_moves2 != 0:
@@ -124,67 +136,93 @@ def obstacle_mover():
             if obstacleob.direction == 'right':
                 obstacleob.move_right()
 
+#displays the obstacles
 def update_obstacle():
     for obstacleob in obstacles:
         pygame.draw.rect(DISPLAYSURF,BLACK,obstacleob.rect,0)
 
+#infinite loop
 while True:
+    #filling the screen white
     DISPLAYSURF.fill(WHITE)
 
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+        #only works if it is in the opening screen
         if event.type == MOUSEBUTTONDOWN and opener == 'true':
+            #determines if the play button has been pressed and changes 'opener'
             opener = switch_opener(opener)
+        #as long as it is not in the opening screen
         if event.type == KEYDOWN and opener != 'true':
+            #move the ball
             if event.key == K_LEFT:
                 ballob.move_left()
             if event.key == K_RIGHT:
                 ballob.move_right()
 
+    #displays the opening screen
     if opener == 'true':
         opening_screen()
 
+    #if it should be running the real game instead of the opening screen
     else:
+        #move the hoop and display its new location
         hoop_move()
         update_hoop()
 
+        #change 'direction' if the hoop has reached the edge of the screen
         direction = switch_direction(direction)
 
+        #move the ball down and display its new location
         ballob.move_down()
         update_ball()
 
+        #update location of obstacles/move them depending on the level
         if level == 2:
             update_obstacle()
-
         if level == 3:
             obstacle_mover()
             update_obstacle()
-
         if level == 4:
             obstacle_mover()
             update_obstacle()
+        if level == 5:
+            update_obstacle()
 
+        #if the ball has reached the point in the screen where it will hit or miss the hoop (or if it hits an obstacle)
         if ballob.rect.y == 355 or obstacle_collide() == True:
+            #see if the round was won or lost
             win_lose = round_over()
+            #if the player won (do the stuff here that should be done once a round, not once an iteration)
             if win_lose == 'win':
+                #go to the next level and reset the ball, hoop, and variables that need to be reset
                 level += 1
                 ballob.reset()
                 hoopob.reset()
                 direction = 'right'
                 win_lose = 'N/A'
+                #increase game speed every round
                 FPS += 3
+                #remove all obstacles from the group
                 for obstacleob in obstacles:
                     obstacles.remove(obstacleob)
+                #make obstacles depending on level
                 if level == 2:
                     obstacle_maker(125,220,50,20,0,'right')
                 if level == 3:
                     obstacle_maker(135,210,30,10,12,'either')
                 if level == 4:
-                    obstacle_maker(145,160,10,30,18,'left')
-                    obstacle_maker(145,210,10,30,18,'right')
+                    obstacle_maker(145,140,10,20,18,'left')
+                    obstacle_maker(145,210,10,20,18,'right')
+                if level == 5:
+                    obstacle_maker(120,130,60,10,0,'left')
+                    obstacle_maker(0,220,100,10,0,'left')
+                    obstacle_maker(200,220,100,10,0,'left')
+            #if the player lost
             if win_lose == 'lose' or obstacle_collide() == True:
+                #infinnite game over screen
                 while True:
                     DISPLAYSURF.fill(WHITE)
                     game_over()
@@ -194,5 +232,6 @@ while True:
                             pygame.quit()
                             sys.exit()
 
+    #update screen
     pygame.display.update()
     fpsClock.tick(FPS)
